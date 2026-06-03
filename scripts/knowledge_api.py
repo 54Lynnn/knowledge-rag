@@ -6,7 +6,8 @@ knowledge_api.py — FastAPI 后端
 TS Express 通过 HTTP 调用本服务，不再 execSync 子进程。
 
 用法：
-  uvicorn knowledge_api:app --host 0.0.0.0 --port 8768
+  .venv/bin/python3 -m uvicorn knowledge_api:app --host 0.0.0.0 --port 8768
+  或直接用 start.py 一键启动
 """
 
 import os, sys, json, io, contextlib

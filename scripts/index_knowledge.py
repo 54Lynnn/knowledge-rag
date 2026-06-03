@@ -6,9 +6,9 @@ index_knowledge.py — 知识仓库索引构建
 按文件类型解析、切片、向量化，统一存入索引。
 
 用法：
-  python3 index_knowledge.py                    # 增量更新
-  python3 index_knowledge.py --force            # 全量重建
-  python3 index_knowledge.py --source bilibili  # 只更新某个来源
+  .venv/bin/python3 scripts/index_knowledge.py                    # 增量更新
+  .venv/bin/python3 scripts/index_knowledge.py --force            # 全量重建
+  .venv/bin/python3 scripts/index_knowledge.py --source bilibili  # 只更新某个来源
 """
 
 import os, sys, json, re, hashlib, sqlite3, concurrent.futures
@@ -168,7 +168,7 @@ def extract_metadata_generic(text, filename, source_type):
 
 def extract_pdf_text(filepath):
     if not HAS_PYPDF2 and not HAS_PDFPLUMBER:
-        raise RuntimeError("PDF 解析库未安装，请运行: pip install --break-system-packages PyPDF2 pdfplumber")
+        raise RuntimeError("PDF 解析库未安装，请先创建虚拟环境: cd <skill_dir> && python3 -m venv .venv && .venv/bin/pip install PyPDF2 pdfplumber")
 
     pages = []
 
@@ -190,7 +190,7 @@ def extract_pdf_text(filepath):
         if not HAS_PDFPLUMBER:
             raise RuntimeError(
                 "PDF 未提取到文字内容（可能是纯图像PDF，"
-                "安装 pdfplumber 可能解决: pip install --break-system-packages pdfplumber"
+                "安装 pdfplumber 可能解决: .venv/bin/pip install pdfplumber"
             )
         raise RuntimeError("PDF 未提取到文字内容（可能是纯图像PDF）")
     return "\n\n".join(pages)
@@ -198,7 +198,7 @@ def extract_pdf_text(filepath):
 
 def extract_docx_text(filepath):
     if not HAS_DOCX:
-        raise RuntimeError("python-docx 未安装，请运行: pip install --break-system-packages python-docx")
+        raise RuntimeError("python-docx 未安装，请先创建虚拟环境: .venv/bin/pip install python-docx")
     doc = Document(filepath)
     parts = []
 

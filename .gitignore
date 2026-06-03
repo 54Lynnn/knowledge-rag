@@ -1,5 +1,6 @@
 web/node_modules/
 logs/
-*.pyc
+.venv/
 __pycache__/
+*.pyc
 .DS_Store

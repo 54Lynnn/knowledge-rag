@@ -3,10 +3,10 @@
 query_knowledge.py — 知识仓库搜索
 
 用法：
-  python3 query_knowledge.py "你的问题"
-  python3 query_knowledge.py "你的问题" --source bilibili
-  python3 query_knowledge.py "你的问题" --top 10
-  python3 query_knowledge.py --stats
+  .venv/bin/python3 scripts/query_knowledge.py "你的问题"
+  .venv/bin/python3 scripts/query_knowledge.py "你的问题" --source bilibili
+  .venv/bin/python3 scripts/query_knowledge.py "你的问题" --top 10
+  .venv/bin/python3 scripts/query_knowledge.py --stats
 """
 
 import os, sys, json, sqlite3
@@ -245,12 +245,12 @@ if __name__ == "__main__":
             show_stats()
     elif not query:
         print("用法:")
-        print("  python3 query_knowledge.py '你的问题'")
-        print("  python3 query_knowledge.py '你的问题' --source bilibili")
-        print("  python3 query_knowledge.py '你的问题' --author 付鹏")
-        print("  python3 query_knowledge.py '你的问题' --top 10")
-        print("  python3 query_knowledge.py --stats")
-        print("  python3 query_knowledge.py --stats --json")
+        print("  .venv/bin/python3 scripts/query_knowledge.py '你的问题'")
+        print("  .venv/bin/python3 scripts/query_knowledge.py '你的问题' --source bilibili")
+        print("  .venv/bin/python3 scripts/query_knowledge.py '你的问题' --author 付鹏")
+        print("  .venv/bin/python3 scripts/query_knowledge.py '你的问题' --top 10")
+        print("  .venv/bin/python3 scripts/query_knowledge.py --stats")
+        print("  .venv/bin/python3 scripts/query_knowledge.py --stats --json")
     else:
         results = search(query, top_k=top_k, source=source, author=author)
         if json_output:

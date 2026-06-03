@@ -30,10 +30,12 @@ curl -fsSL https://ollama.com/install.sh | sh
 # 2. 拉取推荐模型（千问3 Embedding 8B）
 ollama pull qwen3-embedding:8b
 
-# 3. 克隆并启动
-git clone https://github.com/54Lynnn/knowledge-rag.git
-cd knowledge-rag
-python3 start.py
+# 3. 创建虚拟环境并安装依赖
+python3 -m venv .venv
+.venv/bin/pip install numpy requests fastapi pydantic uvicorn PyPDF2 pdfplumber python-docx
+
+# 4. 启动
+.venv/bin/python3 start.py
 ```
 
 打开 `http://localhost:5777` → 把文件丢到 `~/workspace/knowledge/` → 点「重新索引」→ 开搜。
@@ -120,13 +122,13 @@ python3 start.py
 
 ```bash
 # 索引
-python3 scripts/index_knowledge.py          # 增量更新
-python3 scripts/index_knowledge.py --force  # 全量重建
+.venv/bin/python3 scripts/index_knowledge.py          # 增量更新
+.venv/bin/python3 scripts/index_knowledge.py --force  # 全量重建
 
 # 搜索
-python3 scripts/query_knowledge.py "你的问题"
-python3 scripts/query_knowledge.py "微服务" --source bilibili --top 5
-python3 scripts/query_knowledge.py --stats
+.venv/bin/python3 scripts/query_knowledge.py "你的问题"
+.venv/bin/python3 scripts/query_knowledge.py "微服务" --source bilibili --top 5
+.venv/bin/python3 scripts/query_knowledge.py --stats
 ```
 
 ---
@@ -148,7 +150,7 @@ clawhub install knowledge-rag
 
 - 依赖 [Ollama](https://ollama.com/download)，首次下载模型约 4.7GB（8B）或 640MB（0.6B）需联网
 - PDF 支持**文字版** PDF，纯图像版 PDF 暂不支持
-- PDF/DOCX 解析需安装额外依赖：`pip install --break-system-packages PyPDF2 pdfplumber python-docx`
+- PDF/DOCX 解析需先创建虚拟环境：`python3 -m venv .venv && .venv/bin/pip install PyPDF2 pdfplumber python-docx`
 - 数据全部在 `~/workspace/knowledge/`，卸载不丢
 
 ---

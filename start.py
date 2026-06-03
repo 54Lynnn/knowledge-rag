@@ -3,8 +3,8 @@
 一键启动知识仓库服务
 
 用法：
-  python3 start.py          # 启动后打开网页
-  python3 start.py --ts     # 只启动 TS 网页（假设 Python API 已运行）
+  .venv/bin/python3 start.py     # 启动后打开网页（推荐）
+  python3 start.py               # 也兼容，但需先建 .venv
 
 启动后访问 http://localhost:5777
 """
@@ -21,6 +21,14 @@ RECOMMENDED_MODEL = "qwen3-embedding:8b"
 CONFIG_FILE = os.path.expanduser("~/workspace/knowledge/.knowledge-config.json")
 
 processes = []
+
+
+def get_python():
+    """优先使用 .venv 的 python3，否则退回系统 python3"""
+    venv_python = os.path.join(SKILL_DIR, ".venv", "bin", "python3")
+    if os.path.exists(venv_python):
+        return venv_python
+    return sys.executable
 
 
 def print_status(msg, status="info"):
@@ -127,7 +135,7 @@ def start_python_api():
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, "python_api.log")
     proc = subprocess.Popen(
-        [sys.executable, script, str(PYTHON_API_PORT)],
+        [get_python(), script, str(PYTHON_API_PORT)],
         stdout=open(log_file, "a"), stderr=subprocess.STDOUT,
     )
     processes.append(proc)

@@ -18,8 +18,8 @@ metadata:
         command: "ollama pull qwen3-embedding:8b"
       - id: "pip-deps"
         kind: "shell"
-        label: "安装 PDF/DOCX 解析依赖"
-        command: "pip install --break-system-packages PyPDF2 pdfplumber python-docx"
+        label: "创建虚拟环境并安装 Python 依赖"
+        command: "cd {{SKILL_DIR}} && python3 -m venv .venv && .venv/bin/pip install numpy requests fastapi pydantic uvicorn PyPDF2 pdfplumber python-docx"
       - id: "auto-index-cron"
         kind: "shell"
         optional: true
@@ -42,8 +42,12 @@ curl -fsSL https://ollama.com/install.sh | sh
 # 2. 拉取推荐模型（千问3 Embedding，中文最优）
 ollama pull qwen3-embedding:8b
 
-# 3. 启动（自动完成环境检测、依赖安装、打开浏览器）
-python3 start.py
+# 3. 创建虚拟环境并安装依赖
+python3 -m venv .venv
+.venv/bin/pip install numpy requests fastapi pydantic uvicorn PyPDF2 pdfplumber python-docx
+
+# 4. 启动
+.venv/bin/python3 start.py
 ```
 
 打开 `http://localhost:5777` → 文件丢到 `~/workspace/knowledge/` → 管理页点「重新索引」→ 搜索页开搜。
@@ -54,7 +58,7 @@ python3 start.py
 openclaw cron add \
   --name "knowledge-rag 自动索引" \
   --every 1800000 \
-  --message "运行索引检查：python3 scripts/index_knowledge.py" \
+  --message "运行索引检查：cd ~/.openclaw/workspace/skills/knowledge-rag && .venv/bin/python3 scripts/index_knowledge.py" \
   --silent
 ```
 
@@ -85,15 +89,15 @@ openclaw cron add \
 
 ### 命令行
 ```bash
-python3 scripts/query_knowledge.py "你的问题"
-python3 scripts/query_knowledge.py "微服务" --source bilibili --top 5
-python3 scripts/query_knowledge.py --stats
+.venv/bin/python3 scripts/query_knowledge.py "你的问题"
+.venv/bin/python3 scripts/query_knowledge.py "微服务" --source bilibili --top 5
+.venv/bin/python3 scripts/query_knowledge.py --stats
 ```
 
 新增文件后运行索引即可：
 ```bash
-python3 scripts/index_knowledge.py          # 增量
-python3 scripts/index_knowledge.py --force  # 全量重建
+.venv/bin/python3 scripts/index_knowledge.py          # 增量
+.venv/bin/python3 scripts/index_knowledge.py --force  # 全量重建
 ```
 
 ---
@@ -109,7 +113,7 @@ python3 scripts/index_knowledge.py --force  # 全量重建
 | 公众号、网页文章 | `wechat-articles/` | 文章标题.md |
 | 其他 | `other/` | 内容摘要.md |
 
-保存后运行 `python3 scripts/index_knowledge.py` 更新索引。
+保存后运行 `.venv/bin/python3 scripts/index_knowledge.py` 更新索引。
 
 ---
 
@@ -138,7 +142,7 @@ python3 scripts/index_knowledge.py --force  # 全量重建
 
 快速诊断：
 ```bash
-curl -s http://localhost:8768/api/stats | python3 -c "
+curl -s http://localhost:8768/api/stats | .venv/bin/python3 -c "
 import sys,json; d=json.load(sys.stdin)
 em = d.get('embed_model',{})
 print(f'配置: {em.get(\"current\",\"?\")} | 索引: {em.get(\"stored\",\"?\")} ({em.get(\"stored_dim\",\"?\")}维)')
@@ -152,7 +156,7 @@ print(f'状态: {\"✅ 正常\" if not em.get(\"mismatch\") else \"❌ 不匹配
 - 依赖 Ollama，首次下载模型约 640MB 需联网
 - PDF 支持**文字版** PDF（PyPDF2 优先提取，失败自动降级到 pdfplumber），纯图像版 PDF 暂不支持
 - DOCX 支持通过 python-docx 提取段落文字和表格内容
-- PDF/DOCX 解析需安装额外依赖：`pip install --break-system-packages PyPDF2 pdfplumber python-docx`
+- PDF/DOCX 解析需先创建虚拟环境：`python3 -m venv .venv && .venv/bin/pip install PyPDF2 pdfplumber python-docx`
 - 仅支持纯文本内容，不支持图片和 PDF 中的图像
 - 删除文件后运行「重新索引」即可从搜索结果移除（增量索引自动清理已删除文件，无需 --force）
 - 数据全部在 `~/workspace/knowledge/`，卸载不丢
